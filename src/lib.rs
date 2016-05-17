@@ -39,6 +39,15 @@ pub fn score(bytes: &[u8]) -> u64 {
     return result;
 }
 
+
+pub fn find_key(bytes: &[u8]) -> u8 {
+    (0...255).max_by_key(|key| {
+        let tmp: Vec<u8> = bytes.iter().map(|x| {x ^ key}).collect();
+        score(&tmp)
+    }).unwrap()
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -48,5 +57,14 @@ mod tests {
         let bytes = b"ETAOIN SHRDLU";
 
         assert_eq!(40, score(bytes));
+    }
+
+    #[test]
+    fn find_key_test() {
+        let bytes = b"YELLOW SUBMARINE!!";
+        let key = 42;
+        let tmp: Vec<u8> = bytes.iter().map(|x| x ^ key).collect();
+
+        assert_eq!(find_key(&tmp), key);
     }
 }
